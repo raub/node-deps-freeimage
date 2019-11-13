@@ -4,6 +4,7 @@
 .DS_Store
 .project
 .DS_Store
+.vscode
 .eslintrc
 node_modules/
 bin-*/

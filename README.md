@@ -7,7 +7,7 @@ This is a part of [Node3D](https://github.com/node-3d) project.
 [![Build Status](https://api.travis-ci.com/node-3d/deps-freeimage-raub.svg?branch=master)](https://travis-ci.com/node-3d/deps-freeimage-raub)
 [![CodeFactor](https://www.codefactor.io/repository/github/node-3d/deps-freeimage-raub/badge)](https://www.codefactor.io/repository/github/node-3d/deps-freeimage-raub)
 
-> npm i -s deps-freeimage-raub
+> npm i deps-freeimage-raub
 
 
 ## Synopsis
@@ -22,49 +22,83 @@ binaries through **NPM** for **Node.js** addons.
 
 ## Usage
 
-### binding.gyp
+### Example binding.gyp
+
+As in [image-raub](https://github.com/node-3d/image-raub/tree/master/src) Node.js addon.
 
 ```javascript
+{
 	'variables': {
-		'freeimage_include' : '<!(node -p "require(\'deps-freeimage-raub\').include")',
-		'freeimage_bin'     : '<!(node -p "require(\'deps-freeimage-raub\').bin")',
+		'bin'        : '<!(node -p "require(\'addon-tools-raub\').bin")',
+		'fi_include' : '<!(node -p "require(\'deps-freeimage-raub\').include")',
+		'fi_bin'     : '<!(node -p "require(\'deps-freeimage-raub\').bin")',
 	},
-	...
 	'targets': [
 		{
-			'target_name': '...',
-			
-			'include_dirs': [
-				'<(freeimage_include)',
-				...
+			'target_name': 'image',
+			'sources': [
+				'cpp/bindings.cpp',
+				'cpp/image.cpp',
 			],
-			
-			'library_dirs': [ '<(freeimage_bin)' ],
-			
+			'include_dirs': [
+				'<(fi_include)',
+				'<!@(node -p "require(\'addon-tools-raub\').include")',
+			],
+			'cflags!': ['-fno-exceptions'],
+			'cflags_cc!': ['-fno-exceptions'],
+			'library_dirs': ['<(fi_bin)'],
 			'conditions': [
-				
-				['OS=="linux"', {
-					'libraries': [
-						'-Wl,-rpath,<(freeimage_bin)',
-						'<(freeimage_bin)/freeimage.so',
-						...
-					],
-				}],
-				
-				['OS=="mac"', {
-					'libraries': [
-						'-Wl,-rpath,<(freeimage_bin)',
-						'<(freeimage_bin)/freeimage.dylib',
-						...
-					],
-				}],
-				
-				['OS=="win"', {
-					'libraries': [ 'FreeImage.lib', ... ],
-				}],
-				
+				[
+					'OS=="linux"',
+					{
+						'libraries': [
+							"-Wl,-rpath,'$$ORIGIN'",
+							"-Wl,-rpath,'$$ORIGIN/../node_modules/deps-freeimage-raub/<(bin)'",
+							"-Wl,-rpath,'$$ORIGIN/../../deps-freeimage-raub/<(bin)'",
+							'<(fi_bin)/libfreeimage.so.3',
+						],
+					}
+				],
+				[
+					'OS=="mac"',
+					{
+						'libraries': [
+							'-Wl,-rpath,@loader_path',
+							'-Wl,-rpath,@loader_path/../node_modules/deps-freeimage-raub/<(bin)',
+							'-Wl,-rpath,@loader_path/../../deps-freeimage-raub/<(bin)',
+							'<(fi_bin)/freeimage.dylib',
+						],
+						'xcode_settings': {
+							'DYLIB_INSTALL_NAME_BASE': '@rpath',
+						},
+					}
+				],
+				[
+					'OS=="win"',
+					{
+						'libraries': ['FreeImage.lib'],
+						'defines' : [
+							'WIN32_LEAN_AND_MEAN',
+							'VC_EXTRALEAN'
+						],
+						'msvs_version'  : '2013',
+						'msvs_settings' : {
+							'VCCLCompilerTool' : {
+								'AdditionalOptions' : [
+									'/O2','/Oy','/GL','/GF','/Gm-','/EHsc',
+									'/MT','/GS','/Gy','/GR-','/Gd',
+								]
+							},
+							'VCLinkerTool' : {
+								'AdditionalOptions' : ['/OPT:REF','/OPT:ICF','/LTCG']
+							},
+						},
+					}
+				],
 			],
 		},
+	]
+}
 ```
 
 
