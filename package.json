@@ -48,6 +48,6 @@
 		"url": "https://github.com/node-3d/deps-freeimage-raub.git"
 	},
 	"dependencies": {
-		"addon-tools-raub": "https://github.com/node-3d/addon-tools-raub.git"
+		"addon-tools-raub": "5.0.0"
 	}
 }
