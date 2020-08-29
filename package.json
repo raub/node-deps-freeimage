@@ -1,7 +1,7 @@
 {
 	"author": "Luis Blanco <luisblanco1337@gmail.com>",
 	"name": "deps-freeimage-raub",
-	"version": "2.0.2",
+	"version": "2.0.3",
 	"description": "Binaries and headers for FreeImage-dependent compilation",
 	"license": "MIT",
 	"main": "index.js",
@@ -48,6 +48,6 @@
 		"url": "https://github.com/node-3d/deps-freeimage-raub.git"
 	},
 	"dependencies": {
-		"addon-tools-raub": "5.1.x"
+		"addon-tools-raub": "5.2.x"
 	}
 }
