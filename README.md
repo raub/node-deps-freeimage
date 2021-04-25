@@ -3,16 +3,16 @@
 This is a part of [Node3D](https://github.com/node-3d) project.
 
 [![NPM](https://nodei.co/npm/deps-freeimage-raub.png?compact=true)](https://www.npmjs.com/package/deps-freeimage-raub)
-
-[![Build Status](https://api.travis-ci.com/node-3d/deps-freeimage-raub.svg?branch=master)](https://travis-ci.com/node-3d/deps-freeimage-raub)
 [![CodeFactor](https://www.codefactor.io/repository/github/node-3d/deps-freeimage-raub/badge)](https://www.codefactor.io/repository/github/node-3d/deps-freeimage-raub)
 
-> npm i deps-freeimage-raub
+```
+npm i deps-freeimage-raub
+```
 
 
 ## Synopsis
 
-This dependency package is distributing **FreeImage 3.17**
+This dependency package is distributing **FreeImage 3.18**
 binaries through **NPM** for **Node.js** addons.
 
 * Platforms (x64): Windows, Linux, OSX.
@@ -108,7 +108,7 @@ As in [image-raub](https://github.com/node-3d/image-raub/tree/master/src) Node.j
 #include <FreeImage.h>
 ```
 
-Refer to [FreeImage 3.17 docs](http://mirrors.dotsrc.org/pub/exherbo/FreeImage3170.pdf).
+Refer to [FreeImage 3.18 docs](http://downloads.sourceforge.net/freeimage/FreeImage3180.pdf).
 
 
 ## Legal notice
@@ -122,10 +122,5 @@ which also can be found on
 [FreeImage's official web-site](http://freeimage.sourceforge.net/license.html).
 The rest of this package is MIT licensed.
 
-Windows binaries were found on the official web-site.
-Unix binaries are found in
-[Ubuntu Packages](https://packages.ubuntu.com/source/cosmic/freeimage).
-OSX binaries are built through MAKE system with
-[Travis CI matrix](https://travis-ci.com/node-3d/deps-freeimage-raub).
-See Travis [config](https://github.com/node-3d/deps-freeimage-raub/blob/master/.travis.yml)
-for details.
+Windows, Linux, and OSX binaries are built with
+[GitHub Actions](https://github.com/node-3d/deps-freeimage-raub/actions).
