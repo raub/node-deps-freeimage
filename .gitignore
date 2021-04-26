@@ -7,3 +7,6 @@
 node_modules/
 bin-*/
 *.log
+doc/jest/
+src/build/
+src/FreeImage/

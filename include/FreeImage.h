@@ -3,7 +3,7 @@
 //
 // Design and implementation by
 // - Floris van den Berg (flvdberg@wxs.nl)
-// - Herve Drolon (drolon@infonie.fr)
+// - Hervé Drolon (drolon@infonie.fr)
 //
 // Contributors:
 // - see changes log named 'Whatsnew.txt', see header of each .h and .cpp file
@@ -29,7 +29,7 @@
 // Version information ------------------------------------------------------
 
 #define FREEIMAGE_MAJOR_VERSION   3
-#define FREEIMAGE_MINOR_VERSION   17
+#define FREEIMAGE_MINOR_VERSION   18
 #define FREEIMAGE_RELEASE_SERIAL  0
 
 // Compiler options ---------------------------------------------------------
@@ -75,7 +75,7 @@
 // or define any of FREEIMAGE_BIGENDIAN and FREEIMAGE_LITTLEENDIAN directly
 // to specify the desired endianness.
 #if (!defined(FREEIMAGE_BIGENDIAN) && !defined(FREEIMAGE_LITTLEENDIAN))
-	#if (defined(BYTE_ORDER) && BYTE_ORDER==BIG_ENDIAN) || (defined(__BYTE_ORDER) && __BYTE_ORDER==__BIG_ENDIAN) || (defined(__BYTE_ORDER) && __BYTE_ORDER==__ORDER_BIG_ENDIAN__) || defined(__BIG_ENDIAN__)
+#if (defined(BYTE_ORDER) && BYTE_ORDER==BIG_ENDIAN) || (defined(__BYTE_ORDER) && __BYTE_ORDER==__BIG_ENDIAN) || (defined(__BYTE_ORDER) && __BYTE_ORDER==__ORDER_BIG_ENDIAN__) || defined(__BIG_ENDIAN__)
 		#define FREEIMAGE_BIGENDIAN
 	#endif // BYTE_ORDER
 #endif // !FREEIMAGE_[BIG|LITTLE]ENDIAN
@@ -155,10 +155,8 @@ typedef uint8_t BYTE;
 typedef uint16_t WORD;
 typedef uint32_t DWORD;
 typedef int32_t LONG;
-#ifndef _LIBRAW_TYPES_H
 typedef int64_t INT64;
 typedef uint64_t UINT64;
-#endif
 #else
 // MS is not C99 ISO compliant
 typedef long BOOL;
@@ -475,9 +473,6 @@ FI_ENUM(FREE_IMAGE_DITHER) {
 	FID_BAYER16x16	= 6		//! Bayer ordered dispersed dot dithering (order 4 dithering matrix)
 };
 
-/* Debian: The JPEGTransform functions are deliberately disabled in our build
-   of FreeImage, since they require usage of the vendored copy of libjpeg. */
-#if 0
 /** Lossless JPEG transformations
 Constants used in FreeImage_JPEGTransform
 */
@@ -491,7 +486,6 @@ FI_ENUM(FREE_IMAGE_JPEG_OPERATION) {
 	FIJPEG_OP_ROTATE_180	= 6,	//! 180-degree rotation
 	FIJPEG_OP_ROTATE_270	= 7		//! 270-degree clockwise (or 90 ccw)
 };
-#endif
 
 /** Tone mapping operators.
 Constants used in FreeImage_ToneMapping.
@@ -737,6 +731,9 @@ typedef void (DLL_CALLCONV *FI_InitProc)(Plugin *plugin, int format_id);
 #define PSD_DEFAULT         0
 #define PSD_CMYK			1		//! reads tags for separated CMYK (default is conversion to RGB)
 #define PSD_LAB				2		//! reads tags for CIELab (default is conversion to RGB)
+#define PSD_NONE			0x0100	//! save without any compression
+#define PSD_RLE				0x0200	//! save using RLE compression
+#define PSD_PSB             0x2000  //! save using Adobe Large Document Format (use | to combine with other save flags)
 #define RAS_DEFAULT         0
 #define RAW_DEFAULT         0		//! load the file as linear RGB 48-bit
 #define RAW_PREVIEW			1		//! try to load the embedded JPEG preview with included Exif Data or default to RGB 24-bit
@@ -879,12 +876,18 @@ DLL_API void DLL_CALLCONV FreeImage_UnlockPage(FIMULTIBITMAP *bitmap, FIBITMAP *
 DLL_API BOOL DLL_CALLCONV FreeImage_MovePage(FIMULTIBITMAP *bitmap, int target, int source);
 DLL_API BOOL DLL_CALLCONV FreeImage_GetLockedPageNumbers(FIMULTIBITMAP *bitmap, int *pages, int *count);
 
-// Filetype request routines ------------------------------------------------
+// File type request routines ------------------------------------------------
 
 DLL_API FREE_IMAGE_FORMAT DLL_CALLCONV FreeImage_GetFileType(const char *filename, int size FI_DEFAULT(0));
 DLL_API FREE_IMAGE_FORMAT DLL_CALLCONV FreeImage_GetFileTypeU(const wchar_t *filename, int size FI_DEFAULT(0));
 DLL_API FREE_IMAGE_FORMAT DLL_CALLCONV FreeImage_GetFileTypeFromHandle(FreeImageIO *io, fi_handle handle, int size FI_DEFAULT(0));
 DLL_API FREE_IMAGE_FORMAT DLL_CALLCONV FreeImage_GetFileTypeFromMemory(FIMEMORY *stream, int size FI_DEFAULT(0));
+
+DLL_API BOOL DLL_CALLCONV FreeImage_Validate(FREE_IMAGE_FORMAT fif, const char *filename);
+DLL_API BOOL DLL_CALLCONV FreeImage_ValidateU(FREE_IMAGE_FORMAT fif, const wchar_t *filename);
+DLL_API BOOL DLL_CALLCONV FreeImage_ValidateFromHandle(FREE_IMAGE_FORMAT fif, FreeImageIO *io, fi_handle handle);
+DLL_API BOOL DLL_CALLCONV FreeImage_ValidateFromMemory(FREE_IMAGE_FORMAT fif, FIMEMORY *stream);
+
 
 // Image type request routine -----------------------------------------------
 
@@ -985,8 +988,11 @@ DLL_API void DLL_CALLCONV FreeImage_ConvertLine16To24_555(BYTE *target, BYTE *so
 DLL_API void DLL_CALLCONV FreeImage_ConvertLine16To24_565(BYTE *target, BYTE *source, int width_in_pixels);
 DLL_API void DLL_CALLCONV FreeImage_ConvertLine32To24(BYTE *target, BYTE *source, int width_in_pixels);
 DLL_API void DLL_CALLCONV FreeImage_ConvertLine1To32(BYTE *target, BYTE *source, int width_in_pixels, RGBQUAD *palette);
+DLL_API void DLL_CALLCONV FreeImage_ConvertLine1To32MapTransparency(BYTE *target, BYTE *source, int width_in_pixels, RGBQUAD *palette, BYTE *table, int transparent_pixels);
 DLL_API void DLL_CALLCONV FreeImage_ConvertLine4To32(BYTE *target, BYTE *source, int width_in_pixels, RGBQUAD *palette);
+DLL_API void DLL_CALLCONV FreeImage_ConvertLine4To32MapTransparency(BYTE *target, BYTE *source, int width_in_pixels, RGBQUAD *palette, BYTE *table, int transparent_pixels);
 DLL_API void DLL_CALLCONV FreeImage_ConvertLine8To32(BYTE *target, BYTE *source, int width_in_pixels, RGBQUAD *palette);
+DLL_API void DLL_CALLCONV FreeImage_ConvertLine8To32MapTransparency(BYTE *target, BYTE *source, int width_in_pixels, RGBQUAD *palette, BYTE *table, int transparent_pixels);
 DLL_API void DLL_CALLCONV FreeImage_ConvertLine16To32_555(BYTE *target, BYTE *source, int width_in_pixels);
 DLL_API void DLL_CALLCONV FreeImage_ConvertLine16To32_565(BYTE *target, BYTE *source, int width_in_pixels);
 DLL_API void DLL_CALLCONV FreeImage_ConvertLine24To32(BYTE *target, BYTE *source, int width_in_pixels);
@@ -1082,9 +1088,7 @@ DLL_API const char* DLL_CALLCONV FreeImage_TagToString(FREE_IMAGE_MDMODEL model,
 // --------------------------------------------------------------------------
 // JPEG lossless transformation routines
 // --------------------------------------------------------------------------
-/* Debian: The JPEGTransform functions are deliberately disabled in our build
-   of FreeImage, since they require usage of the vendored copy of libjpeg. */
-#if 0
+
 DLL_API BOOL DLL_CALLCONV FreeImage_JPEGTransform(const char *src_file, const char *dst_file, FREE_IMAGE_JPEG_OPERATION operation, BOOL perfect FI_DEFAULT(TRUE));
 DLL_API BOOL DLL_CALLCONV FreeImage_JPEGTransformU(const wchar_t *src_file, const wchar_t *dst_file, FREE_IMAGE_JPEG_OPERATION operation, BOOL perfect FI_DEFAULT(TRUE));
 DLL_API BOOL DLL_CALLCONV FreeImage_JPEGCrop(const char *src_file, const char *dst_file, int left, int top, int right, int bottom);
@@ -1093,7 +1097,6 @@ DLL_API BOOL DLL_CALLCONV FreeImage_JPEGTransformFromHandle(FreeImageIO* src_io,
 DLL_API BOOL DLL_CALLCONV FreeImage_JPEGTransformCombined(const char *src_file, const char *dst_file, FREE_IMAGE_JPEG_OPERATION operation, int* left, int* top, int* right, int* bottom, BOOL perfect FI_DEFAULT(TRUE));
 DLL_API BOOL DLL_CALLCONV FreeImage_JPEGTransformCombinedU(const wchar_t *src_file, const wchar_t *dst_file, FREE_IMAGE_JPEG_OPERATION operation, int* left, int* top, int* right, int* bottom, BOOL perfect FI_DEFAULT(TRUE));
 DLL_API BOOL DLL_CALLCONV FreeImage_JPEGTransformCombinedFromMemory(FIMEMORY* src_stream, FIMEMORY* dst_stream, FREE_IMAGE_JPEG_OPERATION operation, int* left, int* top, int* right, int* bottom, BOOL perfect FI_DEFAULT(TRUE));
-#endif
 
 
 // --------------------------------------------------------------------------
@@ -1101,8 +1104,6 @@ DLL_API BOOL DLL_CALLCONV FreeImage_JPEGTransformCombinedFromMemory(FIMEMORY* sr
 // --------------------------------------------------------------------------
 
 // rotation and flipping
-/// @deprecated see FreeImage_Rotate
-DLL_API FIBITMAP *DLL_CALLCONV FreeImage_RotateClassic(FIBITMAP *dib, double angle);
 DLL_API FIBITMAP *DLL_CALLCONV FreeImage_Rotate(FIBITMAP *dib, double angle, const void *bkcolor FI_DEFAULT(NULL));
 DLL_API FIBITMAP *DLL_CALLCONV FreeImage_RotateEx(FIBITMAP *dib, double angle, double x_shift, double y_shift, double x_origin, double y_origin, BOOL use_mask);
 DLL_API BOOL DLL_CALLCONV FreeImage_FlipHorizontal(FIBITMAP *dib);

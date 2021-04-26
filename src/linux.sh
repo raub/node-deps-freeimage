@@ -15,8 +15,7 @@ echo 'FreeImage Build Started'
 		
 	)
 	
-	mv glew-2.1.0/lib/libfreeimage.so.2.1.0 build/libGLEW.so.2.1
-	mv FreeImage/libfreeimage.so.3.18 freeimage.so
+	mv FreeImage/Dist/libfreeimageplus-3.18.0.so build/libfreeimage.so.3.18
 	
 )
 
