@@ -20,8 +20,9 @@ echo 'FreeImage Build Started'
 		
 	)
 	
+	ls FreeImage/Dist
 	
-	mv FreeImage/libfreeimage-3.18.0.dylib-x86_64 freeimage.dylib
+	mv FreeImage/Dist/libfreeimage-3.18.0.dylib-x86_64 freeimage.dylib
 	
 )
 
