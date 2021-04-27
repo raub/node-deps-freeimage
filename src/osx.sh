@@ -15,13 +15,13 @@ echo 'FreeImage Build Started'
 			COMPILERFLAGS_X86_64='-arch x86_64 -D__ANSI__ -DDISABLE_PERF_MEASUREMENT' \
 			LIBRARIES_X86_64='-flat_namespace -install_name "@rpath/freeimage.dylib" -Wl,-syslibroot /Applications/Xcode_12.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk' \
 			INCLUDE_X86_64='-isysroot /Applications/Xcode_12.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk' \
-			libfreeimage-3.18.0.dylib-x86_64
-		
-		# >/dev/null
+			libfreeimage-3.18.0.dylib-x86_64 \
+			>/dev/null
 		
 	)
 	
 	ls FreeImage/Dist
+	ls FreeImage
 	
 	mv FreeImage/Dist/libfreeimage-3.18.0.dylib-x86_64 freeimage.dylib
 	
