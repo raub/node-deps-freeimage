@@ -10,7 +10,7 @@ mkdir build
 cd FreeImage
 msbuild /p:Platform=x64 /p:Configuration=Release /p:PlatformToolset=v142 FreeImage.2017.vcxproj
 
-dir Dist
+dir /AD Dist
 
 copy /y Dist\FreeImage.dll build\FreeImage.dll
 copy /y Dist\FreeImage.lib build\FreeImage.lib
