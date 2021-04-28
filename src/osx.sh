@@ -5,6 +5,8 @@ echo 'FreeImage Build Started'
 	cd src
 	unzip -qq FreeImage3180.zip -d .
 	
+	mkdir -p build
+	
 	(
 		cd FreeImage
 		
