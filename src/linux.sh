@@ -11,11 +11,11 @@ echo 'FreeImage Build Started'
 	(
 		cd FreeImage
 		
-		make -f Makefile.fip
+		make
 		
 	)
 	
-	mv FreeImage/Dist/libfreeimageplus-3.18.0.so build/libfreeimage.so.3.18
+	mv FreeImage/Dist/libfreeimage-3.18.0.so build/libfreeimage.so.3.18
 	
 )
 
